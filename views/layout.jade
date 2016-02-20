@@ -1,0 +1,99 @@
+!!!
+html(ng-app="myApp")
+  head
+    meta(charset='utf8')
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1")
+    base(href='/')
+    title Connect 4!
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/css/app.css')
+    link(rel='stylesheet', href='/css/ie10-viewport-bug-workaround.css')
+    link(rel='stylesheet', href='/css/justified-nav.css')
+    script(src='/js/lib/angular/angular.js')
+    script(src='/js/lib/angular/angular-route.js')
+    script(src='/js/app.js')
+    script(src='/js/lib/jquery/jquery-2.0.3.min.js')
+    script(src='/bootstrap/js/bootstrap.min.js')
+    style(type='text/css').
+     .table {
+       border: 1px solid #ddd;
+     }
+     .table th{
+       border: 1px solid #ddd;
+     }
+     .table tr{
+       border: 1px solid #ddd;
+     }
+     .table tr td{
+       border: 1px solid #ddd;
+       width: 50px;
+       height: 50px;
+     }
+    script.
+        $(document).ready(function() {
+            window.localStorage.setItem('board','[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]');
+            for(var i = 0; i < 7; ++i){
+              $('#gameboard').append('<tr>');
+              for(var j = 0; j < 7; ++j){
+                //console.log('add ' + i + ' row.');
+                $('#gameboard tr').last().append('<td>');
+                $('#gameboard tr td').last().addClass('cell').attr('x',j).attr('y',i);
+              }
+            }
+        });
+        $(document).on('click','.cell', 
+          function(){
+            var $this = $(this);
+            var curPlayer;
+            var data = {};
+            if($('#p1').attr('isactive') == 1){
+              curPlayer = 1;
+              $('#p1').attr('style','');
+              $('#p1').attr('isactive',0);
+              $('#p2').attr('style','background-color:red');
+              $('#p2').attr('isactive',1);
+            }else{
+              curPlayer = 2;
+              $('#p2').attr('style','');
+              $('#p2').attr('isactive',0);
+              $('#p1').attr('style','background-color:red');
+              $('#p1').attr('isactive',1);
+            }
+            var board = JSON.parse(window.localStorage.getItem('board'));
+            var clickX = $this.attr('x');
+            var clickY = $this.attr('y');
+            var i = 6;
+            for(;i >= clickY; --i){
+              if(board[clickX][i] == 0){
+                board[clickX][i] = curPlayer;
+                break;
+              }
+            }
+            var landCell;
+            if(i > clickY){ 
+              clickY = i;
+              landCell = $('#gameboard tr:eq('+clickY+') td:eq('+clickX+')');
+            }else{
+              landCell = $this;
+            }
+
+            window.localStorage.setItem('board',JSON.stringify(board));
+            var data = {};
+            if(curPlayer == 1){              
+              data.active_player = 1;
+              landCell.append('1');
+
+            }else if(curPlayer == 2){
+              data.active_player = 2; 
+              landCell.append('2');
+
+            }
+            data.board = board;
+            data.x = clickX;
+            data.y = clickY; 
+            
+            angular.element(document.getElementById('MainCtrl')).scope().click(JSON.stringify(data));
+          }
+        );
+  body(ng-controller='MainCtrl',id='MainCtrl')
+    block body

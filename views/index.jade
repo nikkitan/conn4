@@ -1,0 +1,22 @@
+extends layout
+
+block body
+   .container
+    .well {{svr}}
+    .well
+     .row 
+      #p1.col-xs-3(style='{{p1style}}',isactive='{{p1active}}',class='{{active}}')
+        caption Player 1 Score:
+         p {{p1score}}
+       
+      .col-xs-6
+       caption Game Board:
+       table.table(id='gameboard')
+     
+      #p2.col-xs-3(style='{{p2style}}',isactive='{{p2active}}',class='{{active}}')
+       div(style='')
+       caption(id='2') Player 2 Score:
+        p {{p2score}}
+     
+    footer.footer.text-right
+     p Nikki Tan's test answer for CrunchyRoll.
